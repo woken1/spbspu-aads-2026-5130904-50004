@@ -1,5 +1,7 @@
 #define BOOST_TEST_MODULE ListTests
-#define BOOST_TEST_NO_MAIN
+#ifndef BOOST_TEST_NO_MAIN
+#define BOOST_TEST_MAIN
+#endif
 #include <boost/test/included/unit_test.hpp>
 #include "list.h"
 
@@ -88,10 +90,10 @@ BOOST_AUTO_TEST_CASE(pop_front_check)
 BOOST_AUTO_TEST_CASE(pop_back_check)
 {
   aushev::List< int > lst;
-  lst.push_back(1);
+  lst.push_back(11);
   lst.push_back(2);
   lst.pop_back();
-  BOOST_CHECK_EQUAL(lst.back(), 1);
+  BOOST_CHECK_EQUAL(lst.back(), 11);
   BOOST_CHECK_EQUAL(lst.size(), 1);
 }
 
