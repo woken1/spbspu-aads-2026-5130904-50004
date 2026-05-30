@@ -1,13 +1,16 @@
 #include <iostream>
-#include <string>
 #include "list.h"
 
 namespace aushev {
+
+namespace {
 
 struct Sequence {
   std::string name;
   List< int > numbers;
 };
+
+}
 
 int processSequences()
 {
@@ -18,17 +21,19 @@ int processSequences()
     Sequence seq;
     seq.name = name;
     int number;
+
     while (std::cin.peek() != '\n' && std::cin.peek() != EOF) {
       if (!(std::cin >> number)) {
         if (std::cin.eof()) {
           break;
         }
-        std::cerr << "Error: invalid input\n";
+        std::cerr << "Error: invalid input format" << std::endl;
         return 1;
       }
       seq.numbers.push_back(number);
     }
     sequences.push_back(seq);
+
     if (std::cin.eof()) {
       break;
     }
@@ -36,17 +41,19 @@ int processSequences()
   }
 
   if (sequences.empty()) {
-    std::cout << "0\n";
+    std::cout << "0" << std::endl;
     return 0;
   }
 
+  bool first = true;
   for (auto it = sequences.begin(); it != sequences.end(); ++it) {
-    if (it != sequences.begin()) {
+    if (!first) {
       std::cout << " ";
     }
     std::cout << (*it).name;
+    first = false;
   }
-  std::cout << "\n";
+  std::cout << std::endl;
 
   size_t maxSize = 0;
   for (auto it = sequences.begin(); it != sequences.end(); ++it) {
@@ -55,48 +62,41 @@ int processSequences()
     }
   }
 
-  List< List< int > > transposed;
+  List< long long > sumsList;
+
   for (size_t i = 0; i < maxSize; ++i) {
-    List< int > row;
+    long long currentSum = 0;
+    bool rowHasElements = false;
+
     for (auto it = sequences.begin(); it != sequences.end(); ++it) {
       if (i < (*it).numbers.size()) {
         auto numIt = (*it).numbers.begin();
         for (size_t j = 0; j < i; ++j) {
           ++numIt;
         }
-        row.push_back(*numIt);
+
+        if (!rowHasElements) {
+          rowHasElements = true;
+        } else {
+          std::cout << " ";
+        }
+        std::cout << *numIt;
+        currentSum += *numIt;
       }
     }
-    transposed.push_back(row);
+    std::cout << std::endl;
+    sumsList.push_back(currentSum);
   }
 
-  for (auto it = transposed.begin(); it != transposed.end(); ++it) {
-    for (auto numIt = (*it).begin(); numIt != (*it).end(); ++numIt) {
-      if (numIt != (*it).begin()) {
-        std::cout << " ";
-      }
-      std::cout << *numIt;
+  first = true;
+  for (auto it = sumsList.begin(); it != sumsList.end(); ++it) {
+    if (!first) {
+      std::cout << " ";
     }
-    std::cout << "\n";
+    std::cout << *it;
+    first = false;
   }
-
-  for (auto it = transposed.begin(); it != transposed.end(); ++it) {
-    long long sum = 0;
-    bool canSum = true;
-    for (auto numIt = (*it).begin(); numIt != (*it).end(); ++numIt) {
-      sum += *numIt;
-    }
-    if (canSum) {
-      if (it != transposed.begin()) {
-        std::cout << " ";
-      }
-      std::cout << sum;
-    } else {
-      std::cerr << "Error: cannot calculate sum\n";
-      return 1;
-    }
-  }
-  std::cout << "\n";
+  std::cout << std::endl;
 
   return 0;
 }
@@ -105,5 +105,10 @@ int processSequences()
 
 int main()
 {
-  return aushev::processSequences();
+  try {
+    return aushev::processSequences();
+  } catch (const std::exception& e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 2;
+  }
 }
