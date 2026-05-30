@@ -1,4 +1,6 @@
-#include <boost/test/unit_test.hpp>
+#define BOOST_TEST_MODULE ListTests
+#define BOOST_TEST_NO_MAIN
+#include <boost/test/included/unit_test.hpp>
 #include "list.h"
 
 BOOST_AUTO_TEST_SUITE(ListTests)
