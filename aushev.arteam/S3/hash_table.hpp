@@ -9,6 +9,8 @@ namespace aushev {
 template <typename Key, typename Value, typename Hash = std::hash<Key>, typename Equal = std::equal_to<Key>>
 class HashTable {
 public:
+    using SlotUpdater = std::function<size_t(size_t)>;
+
     struct Node {
         Key key_;
         Value value_;
@@ -88,7 +90,9 @@ public:
         size_t bucketIndex_;
     };
 
-    HashTable(size_t slots = 10) : slots_(slots), size_(0), buckets_(new Node*[slots]()) {
+    HashTable(size_t slots = 10) : slots_(slots), size_(0), buckets_(new Node*[slots]()),
+        maxLoadFactor_(1.0), maxChainLength_(10), autoRehash_(false),
+        slotUpdater_([](size_t before) { return before < 10 ? 20 : before * 2; }) {
         for (size_t i = 0; i < slots_; ++i) {
             buckets_[i] = nullptr;
         }
@@ -99,7 +103,9 @@ public:
         delete[] buckets_;
     }
 
-    HashTable(const HashTable& other) : slots_(other.slots_), size_(0), buckets_(new Node*[other.slots_]()) {
+    HashTable(const HashTable& other) : slots_(other.slots_), size_(0), buckets_(new Node*[other.slots_]()),
+        maxLoadFactor_(other.maxLoadFactor_), maxChainLength_(other.maxChainLength_),
+        autoRehash_(other.autoRehash_), slotUpdater_(other.slotUpdater_) {
         for (size_t i = 0; i < slots_; ++i) {
             buckets_[i] = nullptr;
         }
@@ -118,6 +124,10 @@ public:
             delete[] buckets_;
             slots_ = other.slots_;
             size_ = 0;
+            maxLoadFactor_ = other.maxLoadFactor_;
+            maxChainLength_ = other.maxChainLength_;
+            autoRehash_ = other.autoRehash_;
+            slotUpdater_ = other.slotUpdater_;
             buckets_ = new Node*[slots_]();
             for (size_t i = 0; i < slots_; ++i) {
                 buckets_[i] = nullptr;
@@ -147,6 +157,11 @@ public:
         newNode->next_ = buckets_[index];
         buckets_[index] = newNode;
         ++size_;
+        if (autoRehash_) {
+            if (loadFactor() > maxLoadFactor_ || maxChainLength() > maxChainLength_) {
+                rehash(slotUpdater_(slots_));
+            }
+        }
     }
 
     bool has(const Key& key) const {
@@ -216,6 +231,42 @@ public:
         size_ = 0;
     }
 
+    double loadFactor() const {
+        return static_cast<double>(size_) / slots_;
+    }
+
+    size_t maxChainLength() const {
+        size_t maxLen = 0;
+        for (size_t i = 0; i < slots_; ++i) {
+            size_t len = 0;
+            Node* current = buckets_[i];
+            while (current != nullptr) {
+                ++len;
+                current = current->next_;
+            }
+            if (len > maxLen) {
+                maxLen = len;
+            }
+        }
+        return maxLen;
+    }
+
+    void setMaxLoadFactor(double factor) {
+        maxLoadFactor_ = factor;
+    }
+
+    void setMaxChainLength(size_t length) {
+        maxChainLength_ = length;
+    }
+
+    void enableAutoRehash(bool enable) {
+        autoRehash_ = enable;
+    }
+
+    void setSlotUpdater(SlotUpdater updater) {
+        slotUpdater_ = updater;
+    }
+
     Iterator begin() {
         return Iterator(nullptr, this);
     }
@@ -238,6 +289,10 @@ protected:
     Node** buckets_;
     Hash hash_;
     Equal equal_;
+    double maxLoadFactor_;
+    size_t maxChainLength_;
+    bool autoRehash_;
+    SlotUpdater slotUpdater_;
 };
 
 }
