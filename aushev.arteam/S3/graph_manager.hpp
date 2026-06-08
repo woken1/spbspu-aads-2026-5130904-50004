@@ -8,6 +8,7 @@
 #include "graph.hpp"
 #include "hash_table.hpp"
 #include "dynamic_array.hpp"
+#include "simple_list.hpp"
 
 namespace aushev {
 
@@ -146,6 +147,122 @@ public:
         }
         graphs_.add(oldName, oldGraph);
         graphs_.add(newName, newGraph);
+        return true;
+    }
+
+    void printGraphs() {
+        DynamicArray<std::string> names;
+        for (auto it = graphs_.begin(); it != graphs_.end(); ++it) {
+            names.pushBack((*it).first);
+        }
+        names.sort();
+        for (size_t i = 0; i < names.size(); ++i) {
+            std::cout << names[i] << std::endl;
+        }
+    }
+
+    bool printVertexes(const std::string& graphName) {
+        if (!graphs_.has(graphName)) {
+            return false;
+        }
+        const Graph& g = graphs_.drop(graphName);
+        DynamicArray<std::string> verts;
+        for (auto it = g.getVertices().begin(); it != g.getVertices().end(); ++it) {
+            verts.pushBack((*it).first);
+        }
+        verts.sort();
+        for (size_t i = 0; i < verts.size(); ++i) {
+            std::cout << verts[i] << std::endl;
+        }
+        graphs_.add(graphName, g);
+        return true;
+    }
+
+    bool printOutbound(const std::string& graphName, const std::string& vertex) {
+        if (!graphs_.has(graphName)) {
+            return false;
+        }
+        const Graph& g = graphs_.drop(graphName);
+        if (!g.hasVertex(vertex)) {
+            graphs_.add(graphName, g);
+            return false;
+        }
+        DynamicArray<std::string> targets;
+        for (auto it = g.getEdges().begin(); it != g.getEdges().end(); ++it) {
+            if ((*it).first.first == vertex) {
+                bool found = false;
+                for (size_t i = 0; i < targets.size(); ++i) {
+                    if (targets[i] == (*it).first.second) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    targets.pushBack((*it).first.second);
+                }
+            }
+        }
+        targets.sort();
+        for (size_t i = 0; i < targets.size(); ++i) {
+            std::cout << targets[i];
+            Graph::EdgeKey key = std::make_pair(vertex, targets[i]);
+            const Graph::EdgeValue& weights = g.getEdges().drop(key);
+            DynamicArray<unsigned int> wArr;
+            for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
+                wArr.pushBack(*wit);
+            }
+            wArr.sort();
+            for (size_t j = 0; j < wArr.size(); ++j) {
+                std::cout << " " << wArr[j];
+            }
+            std::cout << std::endl;
+            const_cast<Graph&>(g).getEdges().add(key, weights);
+        }
+        graphs_.add(graphName, g);
+        return true;
+    }
+
+    bool printInbound(const std::string& graphName, const std::string& vertex) {
+        if (!graphs_.has(graphName)) {
+            return false;
+        }
+        const Graph& g = graphs_.drop(graphName);
+        if (!g.hasVertex(vertex)) {
+            graphs_.add(graphName, g);
+            return false;
+        }
+        DynamicArray<std::string> sources;
+        for (auto it = g.getEdges().begin(); it != g.getEdges().end(); ++it) {
+            if ((*it).first.second == vertex) {
+                bool found = false;
+                for (size_t i = 0; i < sources.size(); ++i) {
+                    if (sources[i] == (*it).first.first) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    sources.pushBack((*it).first.first);
+                }
+            }
+        }
+        sources.sort();
+        for (size_t i = 0; i < sources.size(); ++i) {
+            std::cout << sources[i];
+            Graph::EdgeKey key = std::make_pair(sources[i], vertex);
+            const Graph::EdgeValue& weights = g.getEdges().drop(key);
+            DynamicArray<unsigned int> wArr;
+            for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
+                wArr.pushBack(*wit);
+            }
+            wArr.sort();
+            for (size_t j = 0; j < wArr.size(); ++j) {
+                std::cout << " " << wArr[j];
+            }
+            std::cout << std::endl;
+            const_cast<Graph&>(g).getEdges().add(key, weights);
+        }
+        graphs_.add(graphName, g);
         return true;
     }
 
