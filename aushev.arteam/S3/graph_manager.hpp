@@ -7,6 +7,7 @@
 #include <sstream>
 #include "graph.hpp"
 #include "hash_table.hpp"
+#include "dynamic_array.hpp"
 
 namespace aushev {
 
@@ -78,6 +79,73 @@ public:
             return false;
         }
         graphs_.add(graphName, g);
+        return true;
+    }
+
+    bool mergeGraphs(const std::string& newName, const std::string& old1, const std::string& old2) {
+        if (graphs_.has(newName) || !graphs_.has(old1) || !graphs_.has(old2)) {
+            return false;
+        }
+        const Graph& g1 = graphs_.drop(old1);
+        const Graph& g2 = graphs_.drop(old2);
+        Graph newGraph;
+        for (auto it = g1.getVertices().begin(); it != g1.getVertices().end(); ++it) {
+            newGraph.addVertex((*it).first);
+        }
+        for (auto it = g2.getVertices().begin(); it != g2.getVertices().end(); ++it) {
+            newGraph.addVertex((*it).first);
+        }
+        for (auto it = g1.getEdges().begin(); it != g1.getEdges().end(); ++it) {
+            const auto& key = (*it).first;
+            const auto& weights = (*it).second;
+            for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
+                newGraph.addEdge(key.first, key.second, *wit);
+            }
+        }
+        for (auto it = g2.getEdges().begin(); it != g2.getEdges().end(); ++it) {
+            const auto& key = (*it).first;
+            const auto& weights = (*it).second;
+            for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
+                newGraph.addEdge(key.first, key.second, *wit);
+            }
+        }
+        graphs_.add(old1, g1);
+        graphs_.add(old2, g2);
+        graphs_.add(newName, newGraph);
+        return true;
+    }
+
+    bool extractGraph(const std::string& newName, const std::string& oldName, const DynamicArray<std::string>& vertices) {
+        if (graphs_.has(newName) || !graphs_.has(oldName)) {
+            return false;
+        }
+        const Graph& oldGraph = graphs_.drop(oldName);
+        for (size_t i = 0; i < vertices.size(); ++i) {
+            if (!oldGraph.hasVertex(vertices[i])) {
+                graphs_.add(oldName, oldGraph);
+                return false;
+            }
+        }
+        Graph newGraph;
+        for (size_t i = 0; i < vertices.size(); ++i) {
+            newGraph.addVertex(vertices[i]);
+        }
+        for (size_t i = 0; i < vertices.size(); ++i) {
+            for (size_t j = 0; j < vertices.size(); ++j) {
+                const std::string& v1 = vertices[i];
+                const std::string& v2 = vertices[j];
+                Graph::EdgeKey key = std::make_pair(v1, v2);
+                if (oldGraph.getEdges().has(key)) {
+                    const Graph::EdgeValue& weights = oldGraph.getEdges().drop(key);
+                    for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
+                        newGraph.addEdge(v1, v2, *wit);
+                    }
+                    const_cast<Graph&>(oldGraph).getEdges().add(key, weights);
+                }
+            }
+        }
+        graphs_.add(oldName, oldGraph);
+        graphs_.add(newName, newGraph);
         return true;
     }
 
