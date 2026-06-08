@@ -176,6 +176,30 @@ public:
         return false;
     }
 
+    const Value& get(const Key& key) const {
+        size_t index = hash_(key) % slots_;
+        Node* current = buckets_[index];
+        while (current != nullptr) {
+            if (equal_(current->key_, key)) {
+                return current->value_;
+            }
+            current = current->next_;
+        }
+        throw std::out_of_range("Key not found");
+    }
+
+    Value& getRef(const Key& key) {
+        size_t index = hash_(key) % slots_;
+        Node* current = buckets_[index];
+        while (current != nullptr) {
+            if (equal_(current->key_, key)) {
+                return current->value_;
+            }
+            current = current->next_;
+        }
+        throw std::out_of_range("Key not found");
+    }
+
     Value drop(const Key& key) {
         size_t index = hash_(key) % slots_;
         Node* current = buckets_[index];

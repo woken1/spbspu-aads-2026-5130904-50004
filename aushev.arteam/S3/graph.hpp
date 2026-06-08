@@ -68,16 +68,13 @@ public:
             return false;
         }
         try {
-            const EdgeValue& weights = edges_.drop(key);
-            bool found = false;
+            const EdgeValue& weights = edges_.get(key);
             for (auto it = weights.begin(); it != weights.end(); ++it) {
                 if (*it == weight) {
-                    found = true;
-                    break;
+                    return true;
                 }
             }
-            const_cast<Graph*>(this)->edges_.add(key, weights);
-            return found;
+            return false;
         } catch (...) {
             return false;
         }

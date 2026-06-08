@@ -39,7 +39,7 @@ public:
                 std::string v1, v2;
                 unsigned int weight;
                 if (iss >> v1 >> v2 >> weight) {
-                    graphs_.drop(graphName).addEdge(v1, v2, weight);
+                    graphs_.getRef(graphName).addEdge(v1, v2, weight);
                 }
             }
         }
@@ -62,7 +62,7 @@ public:
         if (!graphs_.has(graphName)) {
             return false;
         }
-        graphs_.drop(graphName).addEdge(v1, v2, weight);
+        graphs_.getRef(graphName).addEdge(v1, v2, weight);
         return true;
     }
 
@@ -70,16 +70,13 @@ public:
         if (!graphs_.has(graphName)) {
             return false;
         }
-        Graph& g = graphs_.drop(graphName);
+        Graph& g = graphs_.getRef(graphName);
         if (!g.hasVertex(v1) || !g.hasVertex(v2)) {
-            graphs_.add(graphName, g);
             return false;
         }
         if (!g.removeEdge(v1, v2, weight)) {
-            graphs_.add(graphName, g);
             return false;
         }
-        graphs_.add(graphName, g);
         return true;
     }
 
@@ -87,8 +84,8 @@ public:
         if (graphs_.has(newName) || !graphs_.has(old1) || !graphs_.has(old2)) {
             return false;
         }
-        const Graph& g1 = graphs_.drop(old1);
-        const Graph& g2 = graphs_.drop(old2);
+        const Graph& g1 = graphs_.get(old1);
+        const Graph& g2 = graphs_.get(old2);
         Graph newGraph;
         for (auto it = g1.getVertices().begin(); it != g1.getVertices().end(); ++it) {
             newGraph.addVertex((*it).first);
@@ -110,8 +107,6 @@ public:
                 newGraph.addEdge(key.first, key.second, *wit);
             }
         }
-        graphs_.add(old1, g1);
-        graphs_.add(old2, g2);
         graphs_.add(newName, newGraph);
         return true;
     }
@@ -120,10 +115,9 @@ public:
         if (graphs_.has(newName) || !graphs_.has(oldName)) {
             return false;
         }
-        const Graph& oldGraph = graphs_.drop(oldName);
+        const Graph& oldGraph = graphs_.get(oldName);
         for (size_t i = 0; i < vertices.size(); ++i) {
             if (!oldGraph.hasVertex(vertices[i])) {
-                graphs_.add(oldName, oldGraph);
                 return false;
             }
         }
@@ -137,15 +131,13 @@ public:
                 const std::string& v2 = vertices[j];
                 Graph::EdgeKey key = std::make_pair(v1, v2);
                 if (oldGraph.getEdges().has(key)) {
-                    const Graph::EdgeValue& weights = oldGraph.getEdges().drop(key);
+                    const Graph::EdgeValue& weights = oldGraph.getEdges().get(key);
                     for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
                         newGraph.addEdge(v1, v2, *wit);
                     }
-                    const_cast<Graph&>(oldGraph).getEdges().add(key, weights);
                 }
             }
         }
-        graphs_.add(oldName, oldGraph);
         graphs_.add(newName, newGraph);
         return true;
     }
@@ -165,7 +157,7 @@ public:
         if (!graphs_.has(graphName)) {
             return false;
         }
-        const Graph& g = graphs_.drop(graphName);
+        const Graph& g = graphs_.get(graphName);
         DynamicArray<std::string> verts;
         for (auto it = g.getVertices().begin(); it != g.getVertices().end(); ++it) {
             verts.pushBack((*it).first);
@@ -174,7 +166,6 @@ public:
         for (size_t i = 0; i < verts.size(); ++i) {
             std::cout << verts[i] << std::endl;
         }
-        graphs_.add(graphName, g);
         return true;
     }
 
@@ -182,9 +173,8 @@ public:
         if (!graphs_.has(graphName)) {
             return false;
         }
-        const Graph& g = graphs_.drop(graphName);
+        const Graph& g = graphs_.get(graphName);
         if (!g.hasVertex(vertex)) {
-            graphs_.add(graphName, g);
             return false;
         }
         DynamicArray<std::string> targets;
@@ -206,7 +196,7 @@ public:
         for (size_t i = 0; i < targets.size(); ++i) {
             std::cout << targets[i];
             Graph::EdgeKey key = std::make_pair(vertex, targets[i]);
-            const Graph::EdgeValue& weights = g.getEdges().drop(key);
+            const Graph::EdgeValue& weights = g.getEdges().get(key);
             DynamicArray<unsigned int> wArr;
             for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
                 wArr.pushBack(*wit);
@@ -216,9 +206,7 @@ public:
                 std::cout << " " << wArr[j];
             }
             std::cout << std::endl;
-            const_cast<Graph&>(g).getEdges().add(key, weights);
         }
-        graphs_.add(graphName, g);
         return true;
     }
 
@@ -226,9 +214,8 @@ public:
         if (!graphs_.has(graphName)) {
             return false;
         }
-        const Graph& g = graphs_.drop(graphName);
+        const Graph& g = graphs_.get(graphName);
         if (!g.hasVertex(vertex)) {
-            graphs_.add(graphName, g);
             return false;
         }
         DynamicArray<std::string> sources;
@@ -250,7 +237,7 @@ public:
         for (size_t i = 0; i < sources.size(); ++i) {
             std::cout << sources[i];
             Graph::EdgeKey key = std::make_pair(sources[i], vertex);
-            const Graph::EdgeValue& weights = g.getEdges().drop(key);
+            const Graph::EdgeValue& weights = g.getEdges().get(key);
             DynamicArray<unsigned int> wArr;
             for (auto wit = weights.begin(); wit != weights.end(); ++wit) {
                 wArr.pushBack(*wit);
@@ -260,9 +247,7 @@ public:
                 std::cout << " " << wArr[j];
             }
             std::cout << std::endl;
-            const_cast<Graph&>(g).getEdges().add(key, weights);
         }
-        graphs_.add(graphName, g);
         return true;
     }
 

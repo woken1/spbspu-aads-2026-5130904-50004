@@ -113,12 +113,35 @@ public:
         Node* node_;
     };
 
+    class ConstIterator {
+    public:
+        ConstIterator(const Node* node) : node_(node) {}
+        const T& operator*() const { return node_->data_; }
+        ConstIterator& operator++() {
+            node_ = node_->next_;
+            return *this;
+        }
+        bool operator!=(const ConstIterator& other) const {
+            return node_ != other.node_;
+        }
+    private:
+        const Node* node_;
+    };
+
     Iterator begin() {
         return Iterator(head_);
     }
 
     Iterator end() {
         return Iterator(nullptr);
+    }
+
+    ConstIterator begin() const {
+        return ConstIterator(head_);
+    }
+
+    ConstIterator end() const {
+        return ConstIterator(nullptr);
     }
 
 private:
