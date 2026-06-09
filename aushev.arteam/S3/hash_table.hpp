@@ -255,6 +255,14 @@ public:
         size_ = 0;
     }
 
+    size_t size() const {
+        return size_;
+    }
+
+    bool empty() const {
+        return size_ == 0;
+    }
+
     double loadFactor() const {
         return static_cast<double>(size_) / slots_;
     }
