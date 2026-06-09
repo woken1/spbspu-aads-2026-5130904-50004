@@ -210,6 +210,90 @@ public:
         throw std::out_of_range("key not found");
     }
 
+    Value drop(const Key& k) {
+        Node* target = root_;
+        Node* parent = nullptr;
+        bool isLeft = false;
+
+        while (target) {
+            if (!compare_(target->data_.first, k) && !compare_(k, target->data_.first)) {
+                break;
+            }
+            parent = target;
+            if (compare_(target->data_.first, k)) {
+                target = target->right_;
+                isLeft = false;
+            } else {
+                target = target->left_;
+                isLeft = true;
+            }
+        }
+
+        if (!target) {
+            throw std::out_of_range("key not found");
+        }
+
+        Value result = target->data_.second;
+
+        if (!target->left_ || !target->right_) {
+            Node* child = target->left_ ? target->left_ : target->right_;
+            if (child) {
+                child->parent_ = parent;
+            }
+            if (!parent) {
+                root_ = child;
+            } else if (isLeft) {
+                parent->left_ = child;
+            } else {
+                parent->right_ = child;
+            }
+            delete target;
+            --size_;
+            return result;
+        }
+
+        Node* succ = target->right_;
+        while (succ->left_) {
+            succ = succ->left_;
+        }
+
+        Node* succParent = succ->parent_;
+        bool succIsLeft = (succParent && succ == succParent->left_);
+
+        if (succParent) {
+            if (succIsLeft) {
+                succParent->left_ = succ->right_;
+            } else {
+                succParent->right_ = succ->right_;
+            }
+            if (succ->right_) {
+                succ->right_->parent_ = succParent;
+            }
+        }
+
+        succ->parent_ = parent;
+        if (!parent) {
+            root_ = succ;
+        } else if (isLeft) {
+            parent->left_ = succ;
+        } else {
+            parent->right_ = succ;
+        }
+
+        succ->left_ = target->left_;
+        if (target->left_) {
+            target->left_->parent_ = succ;
+        }
+        succ->right_ = target->right_;
+        if (target->right_) {
+            target->right_->parent_ = succ;
+        }
+
+        delete target;
+        --size_;
+        return result;
+    }
+
     bool contains(const Key& k) const {
         Node* node = root_;
         while (node) {
@@ -230,6 +314,12 @@ public:
 
     size_t height(CIterator it) const {
         return getHeight(it.current_);
+    }
+
+    void clear() {
+        clearTree(root_);
+        root_ = nullptr;
+        size_ = 0;
     }
 };
 
