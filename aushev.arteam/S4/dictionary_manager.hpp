@@ -154,6 +154,69 @@ public:
         std::cout << '\n';
         return true;
     }
+
+    bool complement(const std::string& newName, const std::string& name1, const std::string& name2) {
+        DictionaryEntry* entry1 = dicts_.find(name1);
+        DictionaryEntry* entry2 = dicts_.find(name2);
+        if (!entry1 || !entry2 || dicts_.find(newName)) {
+            return false;
+        }
+
+        dicts_.add(newName);
+        DictionaryEntry* newEntry = dicts_.find(newName);
+        const BSTree<int, std::string>& tree1 = entry1->getTree();
+        const BSTree<int, std::string>& tree2 = entry2->getTree();
+
+        for (auto it = tree1.cbegin(); it != tree1.cend(); ++it) {
+            if (!tree2.contains((*it).first)) {
+                newEntry->getTree().push((*it).first, (*it).second);
+            }
+        }
+        return true;
+    }
+
+    bool intersect(const std::string& newName, const std::string& name1, const std::string& name2) {
+        DictionaryEntry* entry1 = dicts_.find(name1);
+        DictionaryEntry* entry2 = dicts_.find(name2);
+        if (!entry1 || !entry2 || dicts_.find(newName)) {
+            return false;
+        }
+
+        dicts_.add(newName);
+        DictionaryEntry* newEntry = dicts_.find(newName);
+        const BSTree<int, std::string>& tree1 = entry1->getTree();
+        const BSTree<int, std::string>& tree2 = entry2->getTree();
+
+        for (auto it = tree1.cbegin(); it != tree1.cend(); ++it) {
+            if (tree2.contains((*it).first)) {
+                newEntry->getTree().push((*it).first, (*it).second);
+            }
+        }
+        return true;
+    }
+
+    bool unionDicts(const std::string& newName, const std::string& name1, const std::string& name2) {
+        DictionaryEntry* entry1 = dicts_.find(name1);
+        DictionaryEntry* entry2 = dicts_.find(name2);
+        if (!entry1 || !entry2 || dicts_.find(newName)) {
+            return false;
+        }
+
+        dicts_.add(newName);
+        DictionaryEntry* newEntry = dicts_.find(newName);
+        const BSTree<int, std::string>& tree1 = entry1->getTree();
+        const BSTree<int, std::string>& tree2 = entry2->getTree();
+
+        for (auto it = tree1.cbegin(); it != tree1.cend(); ++it) {
+            newEntry->getTree().push((*it).first, (*it).second);
+        }
+        for (auto it = tree2.cbegin(); it != tree2.cend(); ++it) {
+            if (!newEntry->getTree().contains((*it).first)) {
+                newEntry->getTree().push((*it).first, (*it).second);
+            }
+        }
+        return true;
+    }
 };
 
 }
