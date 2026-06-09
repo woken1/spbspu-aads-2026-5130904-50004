@@ -45,47 +45,6 @@ class BSTree {
     }
 
 public:
-    class Iterator {
-        Node* current_;
-    public:
-        friend class BSTree;
-
-        Iterator(Node* cur) : current_(cur) {}
-
-        std::pair<const Key, Value>& operator*() {
-            return current_->data_;
-        }
-
-        std::pair<const Key, Value>* operator->() {
-            return &(current_->data_);
-        }
-
-        Iterator& operator++() {
-            if (current_->right_) {
-                current_ = current_->right_;
-                while (current_->left_) {
-                    current_ = current_->left_;
-                }
-            } else {
-                Node* parent = current_->parent_;
-                while (parent && current_ == parent->right_) {
-                    current_ = parent;
-                    parent = parent->parent_;
-                }
-                current_ = parent;
-            }
-            return *this;
-        }
-
-        bool operator==(const Iterator& other) const {
-            return this->current_ == other.current_;
-        }
-
-        bool operator!=(const Iterator& other) const {
-            return !(*this == other);
-        }
-    };
-
     class CIterator {
         const Node* current_;
     public:
@@ -123,6 +82,51 @@ public:
         }
 
         bool operator!=(const CIterator& other) const {
+            return !(*this == other);
+        }
+    };
+
+    class Iterator {
+        Node* current_;
+    public:
+        friend class BSTree;
+
+        Iterator(Node* cur) : current_(cur) {}
+
+        operator CIterator() const {
+            return CIterator(this->current_);
+        }
+
+        std::pair<const Key, Value>& operator*() {
+            return current_->data_;
+        }
+
+        std::pair<const Key, Value>* operator->() {
+            return &(current_->data_);
+        }
+
+        Iterator& operator++() {
+            if (current_->right_) {
+                current_ = current_->right_;
+                while (current_->left_) {
+                    current_ = current_->left_;
+                }
+            } else {
+                Node* parent = current_->parent_;
+                while (parent && current_ == parent->right_) {
+                    current_ = parent;
+                    parent = parent->parent_;
+                }
+                current_ = parent;
+            }
+            return *this;
+        }
+
+        bool operator==(const Iterator& other) const {
+            return this->current_ == other.current_;
+        }
+
+        bool operator!=(const Iterator& other) const {
             return !(*this == other);
         }
     };
