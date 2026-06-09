@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <iostream>
 #include "dictionary_entry.hpp"
 
 namespace aushev {
@@ -132,6 +133,26 @@ public:
 
     bool createDict(const std::string& name) {
         return dicts_.add(name);
+    }
+
+    bool printDataset(const std::string& name) {
+        DictionaryEntry* entry = dicts_.find(name);
+        if (!entry) {
+            return false;
+        }
+
+        const BSTree<int, std::string>& tree = entry->getTree();
+        if (tree.cbegin() == tree.cend()) {
+            std::cout << "<EMPTY>\n";
+            return true;
+        }
+
+        std::cout << name;
+        for (auto it = tree.cbegin(); it != tree.cend(); ++it) {
+            std::cout << ' ' << (*it).first << ' ' << (*it).second;
+        }
+        std::cout << '\n';
+        return true;
     }
 };
 
