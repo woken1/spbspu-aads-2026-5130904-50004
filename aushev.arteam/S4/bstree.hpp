@@ -45,6 +45,88 @@ class BSTree {
     }
 
 public:
+    class Iterator {
+        Node* current_;
+    public:
+        friend class BSTree;
+
+        Iterator(Node* cur) : current_(cur) {}
+
+        std::pair<const Key, Value>& operator*() {
+            return current_->data_;
+        }
+
+        std::pair<const Key, Value>* operator->() {
+            return &(current_->data_);
+        }
+
+        Iterator& operator++() {
+            if (current_->right_) {
+                current_ = current_->right_;
+                while (current_->left_) {
+                    current_ = current_->left_;
+                }
+            } else {
+                Node* parent = current_->parent_;
+                while (parent && current_ == parent->right_) {
+                    current_ = parent;
+                    parent = parent->parent_;
+                }
+                current_ = parent;
+            }
+            return *this;
+        }
+
+        bool operator==(const Iterator& other) const {
+            return this->current_ == other.current_;
+        }
+
+        bool operator!=(const Iterator& other) const {
+            return !(*this == other);
+        }
+    };
+
+    class CIterator {
+        const Node* current_;
+    public:
+        friend class BSTree;
+
+        CIterator(const Node* cur) : current_(cur) {}
+
+        const std::pair<const Key, Value>& operator*() const {
+            return current_->data_;
+        }
+
+        const std::pair<const Key, Value>* operator->() const {
+            return &(current_->data_);
+        }
+
+        CIterator& operator++() {
+            if (current_->right_) {
+                current_ = current_->right_;
+                while (current_->left_) {
+                    current_ = current_->left_;
+                }
+            } else {
+                const Node* parent = current_->parent_;
+                while (parent && current_ == parent->right_) {
+                    current_ = parent;
+                    parent = parent->parent_;
+                }
+                current_ = parent;
+            }
+            return *this;
+        }
+
+        bool operator==(const CIterator& other) const {
+            return this->current_ == other.current_;
+        }
+
+        bool operator!=(const CIterator& other) const {
+            return !(*this == other);
+        }
+    };
+
     BSTree(const Compare& com = Compare()) :
         root_(nullptr),
         size_(0),
@@ -55,6 +137,36 @@ public:
 
     ~BSTree() {
         clearTree(root_);
+    }
+
+    Iterator begin() {
+        if (!root_) {
+            return Iterator(nullptr);
+        }
+        Node* node = root_;
+        while (node->left_) {
+            node = node->left_;
+        }
+        return Iterator(node);
+    }
+
+    Iterator end() {
+        return Iterator(nullptr);
+    }
+
+    CIterator cbegin() const {
+        if (!root_) {
+            return CIterator(nullptr);
+        }
+        const Node* node = root_;
+        while (node->left_) {
+            node = node->left_;
+        }
+        return CIterator(node);
+    }
+
+    CIterator cend() const {
+        return CIterator(nullptr);
     }
 
     void push(const Key& k, const Value& v) {
@@ -114,6 +226,10 @@ public:
 
     size_t height() const {
         return getHeight(root_);
+    }
+
+    size_t height(CIterator it) const {
+        return getHeight(it.current_);
     }
 };
 
