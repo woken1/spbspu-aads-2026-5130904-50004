@@ -321,6 +321,74 @@ public:
         root_ = nullptr;
         size_ = 0;
     }
+
+    CIterator rotateLeft(CIterator it) {
+        Node* cur = const_cast<Node*>(it.current_);
+        if (!cur || !cur->right_) {
+            return it;
+        }
+        Node* right = cur->right_;
+
+        if (!cur->parent_) {
+            root_ = right;
+        } else if (cur == cur->parent_->left_) {
+            cur->parent_->left_ = right;
+        } else if (cur == cur->parent_->right_) {
+            cur->parent_->right_ = right;
+        }
+
+        right->parent_ = cur->parent_;
+        cur->right_ = right->left_;
+        if (right->left_) {
+            right->left_->parent_ = cur;
+        }
+        cur->parent_ = right;
+        right->left_ = cur;
+
+        return CIterator(right);
+    }
+
+    CIterator rotateRight(CIterator it) {
+        Node* cur = const_cast<Node*>(it.current_);
+        if (!cur || !cur->left_) {
+            return it;
+        }
+        Node* left = cur->left_;
+
+        if (!cur->parent_) {
+            root_ = left;
+        } else if (cur == cur->parent_->left_) {
+            cur->parent_->left_ = left;
+        } else if (cur == cur->parent_->right_) {
+            cur->parent_->right_ = left;
+        }
+
+        left->parent_ = cur->parent_;
+        cur->left_ = left->right_;
+        if (left->right_) {
+            left->right_->parent_ = cur;
+        }
+        cur->parent_ = left;
+        left->right_ = cur;
+
+        return CIterator(left);
+    }
+
+    CIterator rotateLargeLeft(CIterator it) {
+        Node* node = const_cast<Node*>(it.current_);
+        if (node && node->left_) {
+            rotateRight(CIterator(node->left_));
+        }
+        return rotateLeft(it);
+    }
+
+    CIterator rotateLargeRight(CIterator it) {
+        Node* node = const_cast<Node*>(it.current_);
+        if (node && node->right_) {
+            rotateLeft(CIterator(node->right_));
+        }
+        return rotateRight(it);
+    }
 };
 
 }
