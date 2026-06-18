@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <stdexcept>
 #include "list.h"
 
 namespace aushev {
@@ -153,31 +154,36 @@ namespace aushev {
 
 int main()
 {
-  aushev::List< aushev::Sequence > sequences;
-  if (!aushev::readSequences(std::cin, sequences)) {
-    std::cerr << "Error: invalid input format" << std::endl;
+  try {
+    aushev::List< aushev::Sequence > sequences;
+    if (!aushev::readSequences(std::cin, sequences)) {
+      std::cerr << "Error: invalid input format" << std::endl;
+      return 1;
+    }
+
+    if (sequences.empty()) {
+      std::cout << "0" << std::endl;
+      return 0;
+    }
+
+    aushev::printNames(sequences);
+
+    size_t maxSize = aushev::getMaxSize(sequences);
+    if (maxSize == 0) {
+      std::cout << "0" << std::endl;
+      return 0;
+    }
+
+    aushev::List< unsigned long long > sums;
+    if (!aushev::printMatrixAndCalculateSums(sequences, maxSize, sums)) {
+      std::cerr << "Error: sum overflow" << std::endl;
+      return 1;
+    }
+
+    aushev::printSums(sums);
+  } catch (...) {
+    std::cerr << "Error: unknown exception" << std::endl;
     return 1;
   }
-
-  if (sequences.empty()) {
-    std::cout << "0" << std::endl;
-    return 0;
-  }
-
-  aushev::printNames(sequences);
-
-  size_t maxSize = aushev::getMaxSize(sequences);
-  if (maxSize == 0) {
-    std::cout << "0" << std::endl;
-    return 0;
-  }
-
-  aushev::List< unsigned long long > sums;
-  if (!aushev::printMatrixAndCalculateSums(sequences, maxSize, sums)) {
-    std::cerr << "Error: sum overflow" << std::endl;
-    return 1;
-  }
-
-  aushev::printSums(sums);
   return 0;
 }
