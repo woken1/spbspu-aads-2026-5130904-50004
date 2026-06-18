@@ -93,6 +93,7 @@ namespace aushev {
 
     bool printMatrixAndCalculateSums(const List< Sequence >& sequences, size_t maxSize, List< unsigned long long >& sums)
     {
+      bool isOverflowed = false;
       for (size_t i = 0; i < maxSize; ++i) {
         unsigned long long currentSum = 0;
         auto it = sequences.begin();
@@ -118,18 +119,23 @@ namespace aushev {
               }
               std::cout << " " << *nextNumIt;
 
-              if (std::numeric_limits< unsigned long long >::max() - currentSum < *nextNumIt) {
-                return false;
+              if (!isOverflowed) {
+                if (std::numeric_limits< unsigned long long >::max() - currentSum < *nextNumIt) {
+                  isOverflowed = true;
+                } else {
+                  currentSum += *nextNumIt;
+                }
               }
-              currentSum += *nextNumIt;
             }
           }
         }
 
         std::cout << std::endl;
-        sums.push_back(currentSum);
+        if (!isOverflowed) {
+          sums.push_back(currentSum);
+        }
       }
-      return true;
+      return !isOverflowed;
     }
 
     void printSums(const List< unsigned long long >& sums)
