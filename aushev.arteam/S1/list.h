@@ -7,13 +7,13 @@
 #include "lciter.h"
 
 namespace aushev {
-  
+
   template< class T >
   class List
   {
     friend class LIter< T >;
     friend class LCIter< T >;
-    
+
   public:
     List() noexcept;
     ~List() noexcept;
@@ -21,36 +21,36 @@ namespace aushev {
     List& operator=(const List& other);
     List(List&& other) noexcept;
     List& operator=(List&& other) noexcept;
-    
+
     LIter< T > begin() noexcept;
     LIter< T > end() noexcept;
     LCIter< T > begin() const noexcept;
     LCIter< T > end() const noexcept;
     LCIter< T > cbegin() const noexcept;
     LCIter< T > cend() const noexcept;
-    
+
     bool empty() const noexcept;
     size_t size() const noexcept;
     void clear() noexcept;
-    
+
     void push_front(const T& value);
     void push_back(const T& value);
-    
+
     void pop_front() noexcept;
     void pop_back() noexcept;
-    
+
     T& front() noexcept;
     T& back() noexcept;
     const T& front() const noexcept;
     const T& back() const noexcept;
-    
+
   private:
     using NodeT = Node< T >;
     NodeT* head_;
     NodeT* tail_;
     size_t size_;
   };
-  
+
   template< class T >
   List< T >::List() noexcept
     : head_(nullptr)
@@ -58,13 +58,13 @@ namespace aushev {
     , size_(0)
   {
   }
-  
+
   template< class T >
   List< T >::~List() noexcept
   {
     clear();
   }
-  
+
   template< class T >
   List< T >::List(const List& other)
     : head_(nullptr)
@@ -75,7 +75,7 @@ namespace aushev {
       push_back(item);
     }
   }
-  
+
   template< class T >
   List< T >& List< T >::operator=(const List& other)
   {
@@ -87,7 +87,7 @@ namespace aushev {
     }
     return *this;
   }
-  
+
   template< class T >
   List< T >::List(List&& other) noexcept
     : head_(other.head_)
@@ -98,7 +98,7 @@ namespace aushev {
     other.tail_ = nullptr;
     other.size_ = 0;
   }
-  
+
   template< class T >
   List< T >& List< T >::operator=(List&& other) noexcept
   {
@@ -113,7 +113,7 @@ namespace aushev {
     }
     return *this;
   }
-  
+
   template< class T >
   LIter< T > List< T >::begin() noexcept
   {
@@ -122,7 +122,7 @@ namespace aushev {
     it.list_ = this;
     return it;
   }
-  
+
   template< class T >
   LIter< T > List< T >::end() noexcept
   {
@@ -131,7 +131,7 @@ namespace aushev {
     it.list_ = this;
     return it;
   }
-  
+
   template< class T >
   LCIter< T > List< T >::begin() const noexcept
   {
@@ -140,7 +140,7 @@ namespace aushev {
     it.list_ = this;
     return it;
   }
-  
+
   template< class T >
   LCIter< T > List< T >::end() const noexcept
   {
@@ -149,31 +149,31 @@ namespace aushev {
     it.list_ = this;
     return it;
   }
-  
+
   template< class T >
   LCIter< T > List< T >::cbegin() const noexcept
   {
     return begin();
   }
-  
+
   template< class T >
   LCIter< T > List< T >::cend() const noexcept
   {
     return end();
   }
-  
+
   template< class T >
   bool List< T >::empty() const noexcept
   {
     return size_ == 0;
   }
-  
+
   template< class T >
   size_t List< T >::size() const noexcept
   {
     return size_;
   }
-  
+
   template< class T >
   void List< T >::clear() noexcept
   {
@@ -185,7 +185,7 @@ namespace aushev {
     tail_ = nullptr;
     size_ = 0;
   }
-  
+
   template< class T >
   void List< T >::push_front(const T& value)
   {
@@ -202,7 +202,7 @@ namespace aushev {
     }
     ++size_;
   }
-  
+
   template< class T >
   void List< T >::push_back(const T& value)
   {
@@ -219,7 +219,7 @@ namespace aushev {
     }
     ++size_;
   }
-  
+
   template< class T >
   void List< T >::pop_front() noexcept
   {
@@ -236,7 +236,7 @@ namespace aushev {
     delete tmp;
     --size_;
   }
-  
+
   template< class T >
   void List< T >::pop_back() noexcept
   {
@@ -255,31 +255,31 @@ namespace aushev {
     tail_->next = nullptr;
     --size_;
   }
-  
+
   template< class T >
   T& List< T >::front() noexcept
   {
     return head_->data;
   }
-  
+
   template< class T >
   T& List< T >::back() noexcept
   {
     return tail_->data;
   }
-  
+
   template< class T >
   const T& List< T >::front() const noexcept
   {
     return head_->data;
   }
-  
+
   template< class T >
   const T& List< T >::back() const noexcept
   {
     return tail_->data;
   }
-  
+
 }
 
 #endif

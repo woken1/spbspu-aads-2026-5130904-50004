@@ -2,7 +2,7 @@
 #define NODE_H
 
 namespace aushev {
-  
+
   template< class T >
   struct Node
   {
@@ -10,7 +10,7 @@ namespace aushev {
     Node* next;
     Node* prev;
   };
-  
+
 }
 
 #endif

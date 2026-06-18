@@ -4,15 +4,15 @@
 #include "node.h"
 
 namespace aushev {
-  
+
   template< class T >
   class List;
-  
+
   template< class T >
   class LIter
   {
     friend class List< T >;
-    
+
   public:
     LIter() noexcept;
     LIter& operator++();
@@ -23,19 +23,19 @@ namespace aushev {
     T* operator->() const noexcept;
     bool operator==(const LIter& other) const noexcept;
     bool operator!=(const LIter& other) const noexcept;
-    
+
   private:
     Node< T >* node_;
     List< T >* list_;
   };
-  
+
   template< class T >
   LIter< T >::LIter() noexcept
     : node_(nullptr)
     , list_(nullptr)
   {
   }
-  
+
   template< class T >
   LIter< T >& LIter< T >::operator++()
   {
@@ -44,7 +44,7 @@ namespace aushev {
     }
     return *this;
   }
-  
+
   template< class T >
   LIter< T > LIter< T >::operator++(int)
   {
@@ -52,7 +52,7 @@ namespace aushev {
     ++(*this);
     return tmp;
   }
-  
+
   template< class T >
   LIter< T >& LIter< T >::operator--()
   {
@@ -63,7 +63,7 @@ namespace aushev {
     }
     return *this;
   }
-  
+
   template< class T >
   LIter< T > LIter< T >::operator--(int)
   {
@@ -71,31 +71,31 @@ namespace aushev {
     --(*this);
     return tmp;
   }
-  
+
   template< class T >
   T& LIter< T >::operator*() const noexcept
   {
     return node_->data;
   }
-  
+
   template< class T >
   T* LIter< T >::operator->() const noexcept
   {
     return &(node_->data);
   }
-  
+
   template< class T >
   bool LIter< T >::operator==(const LIter& other) const noexcept
   {
     return node_ == other.node_;
   }
-  
+
   template< class T >
   bool LIter< T >::operator!=(const LIter& other) const noexcept
   {
     return node_ != other.node_;
   }
-  
+
 }
 
 #endif
