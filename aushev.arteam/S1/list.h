@@ -94,7 +94,7 @@ namespace aushev {
     , tail_(other.tail_)
     , size_(other.size_)
   {
-    other.head = nullptr;
+    other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
   }
