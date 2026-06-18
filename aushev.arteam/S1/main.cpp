@@ -13,42 +13,70 @@ namespace aushev {
       List< unsigned long long > numbers;
     };
 
-    bool readSequences(List< Sequence >& sequences)
+    bool readSequences(std::istream& in, List< Sequence >& sequences)
     {
-      std::string name;
-      while (std::cin >> name) {
+      std::string line;
+      while (std::getline(in, line)) {
+        if (line.empty()) {
+          continue;
+        }
+
+        size_t pos = line.find(' ');
         Sequence seq;
-        seq.name = name;
 
-        while (std::cin.peek() != '\n' && std::cin.peek() != EOF) {
-          if (std::cin.peek() == ' ') {
-            std::cin.ignore();
-            continue;
-          }
+        if (pos == std::string::npos) {
+          seq.name = line;
+        } else {
+          seq.name = line.substr(0, pos);
+          std::string numbersPart = line.substr(pos + 1);
+          size_t start = 0;
 
-          std::string numStr;
-          if (!(std::cin >> numStr)) {
-            if (std::cin.eof()) {
+          while (start < numbersPart.length()) {
+            while (start < numbersPart.length() && numbersPart[start] == ' ') {
+              ++start;
+            }
+            if (start >= numbersPart.length()) {
               break;
             }
-            return false;
-          }
 
-          try {
-            size_t processedChars = 0;
-            unsigned long long number = std::stoull(numStr, &processedChars);
-            if (processedChars != numStr.length()) {
+            size_t end = numbersPart.find(' ', start);
+            std::string numStr = (end == std::string::npos) ? numbersPart.substr(start) : numbersPart.substr(start, end - start);
+
+            try {
+              size_t processedChars = 0;
+              unsigned long long number = std::stoull(numStr, &processedChars);
+              if (processedChars != numStr.length()) {
+                return false;
+              }
+              seq.numbers.push_back(number);
+            } catch (...) {
               return false;
             }
-            seq.numbers.push_back(number);
-          } catch (...) {
-            return false;
+
+            if (end == std::string::npos) {
+              break;
+            }
+            start = end + 1;
           }
         }
 
         sequences.push_back(seq);
       }
       return true;
+    }
+
+    void printNames(const List< Sequence >& sequences)
+    {
+      if (sequences.empty()) {
+        return;
+      }
+      auto it = sequences.begin();
+      std::cout << (*it).name;
+      ++it;
+      for (; it != sequences.end(); ++it) {
+        std::cout << " " << (*it).name;
+      }
+      std::cout << std::endl;
     }
 
     size_t getMaxSize(const List< Sequence >& sequences)
@@ -126,10 +154,17 @@ namespace aushev {
 int main()
 {
   aushev::List< aushev::Sequence > sequences;
-  if (!aushev::readSequences(sequences)) {
+  if (!aushev::readSequences(std::cin, sequences)) {
     std::cerr << "Error: invalid input format" << std::endl;
     return 1;
   }
+
+  if (sequences.empty()) {
+    std::cout << "0" << std::endl;
+    return 0;
+  }
+
+  aushev::printNames(sequences);
 
   size_t maxSize = aushev::getMaxSize(sequences);
   if (maxSize == 0) {
