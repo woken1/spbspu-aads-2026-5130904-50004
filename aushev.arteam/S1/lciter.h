@@ -9,19 +9,20 @@ namespace aushev {
   class List;
   
   template< class T >
-  class LCIter {
+  class LCIter
+  {
     friend class List< T >;
     
   public:
-    LCIter();
+    LCIter() noexcept;
     LCIter& operator++();
     LCIter operator++(int);
     LCIter& operator--();
     LCIter operator--(int);
-    const T& operator*() const;
-    const T* operator->() const;
-    bool operator==(const LCIter& other) const;
-    bool operator!=(const LCIter& other) const;
+    const T& operator*() const noexcept;
+    const T* operator->() const noexcept;
+    bool operator==(const LCIter& other) const noexcept;
+    bool operator!=(const LCIter& other) const noexcept;
     
   private:
     const Node< T >* node_;
@@ -29,7 +30,7 @@ namespace aushev {
   };
   
   template< class T >
-  LCIter< T >::LCIter()
+  LCIter< T >::LCIter() noexcept
     : node_(nullptr)
     , list_(nullptr)
   {
@@ -72,25 +73,25 @@ namespace aushev {
   }
   
   template< class T >
-  const T& LCIter< T >::operator*() const
+  const T& LCIter< T >::operator*() const noexcept
   {
     return node_->data;
   }
   
   template< class T >
-  const T* LCIter< T >::operator->() const
+  const T* LCIter< T >::operator->() const noexcept
   {
     return &(node_->data);
   }
   
   template< class T >
-  bool LCIter< T >::operator==(const LCIter& other) const
+  bool LCIter< T >::operator==(const LCIter& other) const noexcept
   {
     return node_ == other.node_;
   }
   
   template< class T >
-  bool LCIter< T >::operator!=(const LCIter& other) const
+  bool LCIter< T >::operator!=(const LCIter& other) const noexcept
   {
     return node_ != other.node_;
   }

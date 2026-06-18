@@ -4,7 +4,8 @@
 namespace aushev {
   
   template< class T >
-  struct Node {
+  struct Node
+  {
     T data;
     Node* next;
     Node* prev;
