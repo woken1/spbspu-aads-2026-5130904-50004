@@ -6,6 +6,7 @@ namespace aushev {
 
 static const int STATUS_EMPTY = 0;
 static const int STATUS_OCCUPIED = 1;
+static const int STATUS_DELETED = 2;
 
 std::size_t HashTable::hashFunction(const char* str, std::size_t cap)
 {
@@ -61,6 +62,40 @@ void HashTable::resize()
     }
   }
   std::free(oldTable);
+}
+
+bool HashTable::insert(const hero_t& hero)
+{
+  if (count_ >= capacity_ * 0.75) {
+    resize();
+  }
+
+  std::size_t index = hashFunction(hero.name, capacity_);
+  hero_t entry = hero;
+  entry.status = STATUS_OCCUPIED;
+  entry.distance = 0;
+
+  while (true) {
+    if (table_[index].status == STATUS_EMPTY || table_[index].status == STATUS_DELETED) {
+      table_[index] = entry;
+      ++count_;
+      return true;
+    }
+
+    if (entry.distance > table_[index].distance) {
+      hero_t temp = table_[index];
+      table_[index] = entry;
+      entry = temp;
+      entry.distance = 0;
+    } else {
+      ++entry.distance;
+    }
+
+    ++index;
+    if (index >= capacity_) {
+      index = 0;
+    }
+  }
 }
 
 }

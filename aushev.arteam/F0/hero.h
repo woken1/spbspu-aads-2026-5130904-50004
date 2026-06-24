@@ -35,6 +35,8 @@ public:
   explicit HashTable(std::size_t initialSize = 64);
   ~HashTable();
 
+  bool insert(const hero_t& hero);
+
 private:
   hero_t* table_;
   std::size_t capacity_;
