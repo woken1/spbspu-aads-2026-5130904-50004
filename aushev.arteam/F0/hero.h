@@ -41,6 +41,7 @@ private:
   std::size_t count_;
 
   static std::size_t hashFunction(const char* str, std::size_t cap);
+  void resize();
 };
 
 }
