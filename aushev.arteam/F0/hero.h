@@ -39,6 +39,8 @@ private:
   hero_t* table_;
   std::size_t capacity_;
   std::size_t count_;
+
+  static std::size_t hashFunction(const char* str, std::size_t cap);
 };
 
 }
