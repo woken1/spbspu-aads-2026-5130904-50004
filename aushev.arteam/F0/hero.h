@@ -36,6 +36,8 @@ public:
   ~HashTable();
 
   bool insert(const hero_t& hero);
+  bool remove(const char* name);
+  const hero_t* find(const char* name) const;
 
 private:
   hero_t* table_;

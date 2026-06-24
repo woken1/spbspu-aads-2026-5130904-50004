@@ -54,7 +54,7 @@ void HashTable::resize()
     table_[i].status = STATUS_EMPTY;
   }
 
-  count_ = 0;
+  count = 0;
   for (std::size_t i = 0; i < oldCap; ++i) {
     if (oldTable[i].status == STATUS_OCCUPIED) {
       oldTable[i].distance = 0;
@@ -96,6 +96,50 @@ bool HashTable::insert(const hero_t& hero)
       index = 0;
     }
   }
+}
+
+bool HashTable::remove(const char* name)
+{
+  std::size_t index = hashFunction(name, capacity_);
+  int dist = 0;
+
+  while (table_[index].status != STATUS_EMPTY) {
+    if (table_[index].status == STATUS_OCCUPIED && std::strcmp(table_[index].name, name) == 0) {
+      table_[index].status = STATUS_DELETED;
+      --count_;
+      return true;
+    }
+    ++dist;
+    if (dist > table_[index].distance) {
+      return false;
+    }
+    ++index;
+    if (index >= capacity_) {
+      index = 0;
+    }
+  }
+  return false;
+}
+
+const hero_t* HashTable::find(const char* name) const
+{
+  std::size_t index = hashFunction(name, capacity_);
+  int dist = 0;
+
+  while (table_[index].status != STATUS_EMPTY) {
+    if (table_[index].status == STATUS_OCCUPIED && std::strcmp(table_[index].name, name) == 0) {
+      return &table_[index];
+    }
+    ++dist;
+    if (dist > table_[index].distance) {
+      return nullptr;
+    }
+    ++index;
+    if (index >= capacity_) {
+      index = 0;
+    }
+  }
+  return nullptr;
 }
 
 }
