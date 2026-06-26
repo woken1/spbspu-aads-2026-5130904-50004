@@ -14,6 +14,8 @@ public:
   void clearDraft(lobby_t& lobby);
   bool isBanned(const lobby_t& lobby, const char* name) const;
 
+  void detectLanes(const char* enemies[], std::size_t count, char output[][100]) const;
+
 private:
   const HashTable& db_;
 
