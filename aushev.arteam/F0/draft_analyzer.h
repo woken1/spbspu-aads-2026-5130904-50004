@@ -16,6 +16,8 @@ public:
 
 private:
   const HashTable& db_;
+
+  int getMatchupValue(const hero_t& myHero, const hero_t& enemyHero) const;
 };
 
 }

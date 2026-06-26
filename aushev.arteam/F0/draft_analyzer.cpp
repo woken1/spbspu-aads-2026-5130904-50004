@@ -34,4 +34,18 @@ bool DraftAnalyzer::isBanned(const lobby_t& lobby, const char* name) const
   return false;
 }
 
+int DraftAnalyzer::getMatchupValue(const hero_t& myHero, const hero_t& enemyHero) const
+{
+  int score = 0;
+  if ((std::strcmp(myHero.attr, "Int") == 0 && std::strcmp(enemyHero.attr, "Str") == 0) ||
+      (std::strcmp(myHero.attr, "Str") == 0 && std::strcmp(enemyHero.attr, "Agi") == 0) ||
+      (std::strcmp(myHero.attr, "Agi") == 0 && std::strcmp(enemyHero.attr, "Int") == 0)) {
+    score += 10;
+  }
+  if (myHero.winrate > enemyHero.winrate) {
+    score += 5;
+  }
+  return score;
+}
+
 }
