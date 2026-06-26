@@ -17,6 +17,7 @@ public:
   void detectLanes(const char* enemies[], std::size_t count, char output[][100]) const;
   const hero_t* counterLane(const lobby_t& lobby, const char* myRole,
                             const char* enemyName, int& outScore) const;
+  float calcWinrate(const char* myTeam[], const char* enemyTeam[], char resLines[][100]) const;
 
 private:
   const HashTable& db_;

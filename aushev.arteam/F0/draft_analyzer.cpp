@@ -126,4 +126,53 @@ const hero_t* DraftAnalyzer::counterLane(const lobby_t& lobby, const char* myRol
   return bestHero;
 }
 
+float DraftAnalyzer::calcWinrate(const char* myTeam[], const char* enemyTeam[],
+                                 char resLines[][100]) const
+{
+  float baseWr = 50.0f;
+  float mySum = 0.0f;
+  float enSum = 0.0f;
+
+  for (int i = 0; i < 5; ++i) {
+    const hero_t* myH = db_.find(myTeam[i]);
+    const hero_t* enH = db_.find(enemyTeam[i]);
+    if (myH) {
+      mySum += myH->winrate;
+    }
+    if (enH) {
+      enSum += enH->winrate;
+    }
+  }
+  baseWr += (mySum / 5.0f) - (enSum / 5.0f);
+
+  const char* defaultRoles[5] = {"Safe", "Mid", "Offlane", "Support", "Roam"};
+  int advCount = 0;
+
+  for (int i = 0; i < 5; ++i) {
+    const hero_t* myH = db_.find(myTeam[i]);
+    const hero_t* enH = db_.find(enemyTeam[i]);
+    const char* rName = (i < 5 && i >= 0) ? defaultRoles[i] : "Line";
+
+    if (myH && enH) {
+      int score = getMatchupValue(*myH, *enH);
+      if (score >= 10) {
+        baseWr += 1.5f;
+        if (advCount < 2) {
+          std::snprintf(resLines[advCount], 100, "%s (%s vs %s)", rName, myH->name, enH->name);
+          advCount++;
+        }
+      }
+    }
+  }
+
+  if (advCount == 0) {
+    std::strcpy(resLines[0], "Нет явного преимущества");
+    std::strcpy(resLines[1], "Нет явного преимущества");
+  } else if (advCount == 1) {
+    std::strcpy(resLines[1], "Нет других линий");
+  }
+
+  return baseWr;
+}
+
 }
