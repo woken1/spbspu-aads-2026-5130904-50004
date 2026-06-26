@@ -63,37 +63,32 @@ bool FileHandler::importCsv(HashTable& db, const char* filename, std::size_t& lo
     }
     std::strncpy(h.attr, token, MAX_ATTR - 1);
 
-    token = std::strtok(nullptr, ",");
+    token = std::strtok(nullptr, "\"");
     if (!token) {
       continue;
     }
-    if (token[0] == '"') {
-      token++;
-    }
-    char* endQuote = std::strchr(token, '"');
-    if (endQuote) {
-      *endQuote = '\0';
-    }
 
     h.roleCount = 0;
-    char* savePtr = nullptr;
-    char* roleToken = std::strtok_r(token, ";", &savePtr);
-    while (roleToken && h.roleCount < static_cast< int >(MAX_ROLES)) {
-      std::strncpy(h.roles[h.roleCount], roleToken, MAX_ROLE_LEN - 1);
-      h.roleCount++;
-      roleToken = std::strtok_r(nullptr, ";", &savePtr);
+    char* roleStart = token;
+    while (roleStart && *roleStart && h.roleCount < static_cast< int >(MAX_ROLES)) {
+      char* delim = std::strchr(roleStart, ';');
+      if (delim) {
+        *delim = '\0';
+        std::strncpy(h.roles[h.roleCount], roleStart, MAX_ROLE_LEN - 1);
+        h.roleCount++;
+        roleStart = delim + 1;
+      } else {
+        std::strncpy(h.roles[h.roleCount], roleStart, MAX_ROLE_LEN - 1);
+        h.roleCount++;
+        break;
+      }
     }
 
-    token = std::strtok_r(nullptr, ",", &savePtr);
+    token = std::strtok(nullptr, ",\n");
     if (!token) {
       continue;
     }
     h.winrate = static_cast< float >(std::atof(token));
-
-    token = std::strtok_r(nullptr, ",\n", &savePtr);
-    if (!token) {
-      continue;
-    }
 
     if (h.winrate > 53.0f) {
       h.tier = 'S';
