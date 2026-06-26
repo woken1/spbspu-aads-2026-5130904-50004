@@ -94,7 +94,16 @@ bool FileHandler::importCsv(HashTable& db, const char* filename, std::size_t& lo
     if (!token) {
       continue;
     }
-    h.tier = token[0];
+
+    if (h.winrate > 53.0f) {
+      h.tier = 'S';
+    } else if (h.winrate > 50.0f) {
+      h.tier = 'A';
+    } else if (h.winrate > 47.0f) {
+      h.tier = 'B';
+    } else {
+      h.tier = 'C';
+    }
 
     if (db.insert(h)) {
       loadedCount++;
