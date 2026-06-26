@@ -10,6 +10,9 @@ static const int STATUS_DELETED = 2;
 
 std::size_t HashTable::hashFunction(const char* str, std::size_t cap)
 {
+  if (!str || *str == '\0') {
+    return 0;
+  }
   std::size_t hash = 5381;
   int c = 0;
   while ((c = static_cast< int >(*str++))) {
@@ -99,6 +102,9 @@ bool HashTable::insert(const hero_t& hero)
 
 bool HashTable::remove(const char* name)
 {
+  if (!name || *name == '\0') {
+    return false;
+  }
   std::size_t index = hashFunction(name, capacity_);
   int dist = 0;
 
@@ -122,6 +128,9 @@ bool HashTable::remove(const char* name)
 
 const hero_t* HashTable::find(const char* name) const
 {
+  if (!name || *name == '\0') {
+    return nullptr;
+  }
   std::size_t index = hashFunction(name, capacity_);
   int dist = 0;
 
