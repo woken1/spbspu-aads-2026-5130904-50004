@@ -9,14 +9,15 @@ const std::size_t MAX_NAME = 30;
 const std::size_t MAX_ATTR = 10;
 const std::size_t MAX_ROLES = 5;
 const std::size_t MAX_ROLE_LEN = 15;
-const std::size_t MAX_BANS = 6;
+const std::size_t MAX_BANS = 10;
+const std::size_t MAX_PICKS = 5;
 const std::size_t MAX_LOBBIES = 10;
 
 struct hero_t {
   char name[MAX_NAME];
   char attr[MAX_ATTR];
   char roles[MAX_ROLES][MAX_ROLE_LEN];
-  int roleCount;
+  int role_count;
   float winrate;
   char tier;
   int status;
@@ -26,8 +27,13 @@ struct hero_t {
 struct lobby_t {
   int id;
   char banned[MAX_BANS][MAX_NAME];
-  std::size_t banCount;
-  bool isCreated;
+  std::size_t ban_count;
+  char radiant_picks[MAX_PICKS][MAX_NAME];
+  std::size_t radiant_count;
+  char dire_picks[MAX_PICKS][MAX_NAME];
+  std::size_t dire_count;
+  int my_team_side;
+  bool is_created;
 };
 
 class HashTable {
@@ -35,21 +41,21 @@ public:
   explicit HashTable(std::size_t initialSize = 64);
   ~HashTable();
 
-  bool insert(const hero_t& hero);
-  bool remove(const char* name);
-  const hero_t* find(const char* name) const;
+  bool insert(const hero_t &hero);
+  bool remove(const char *name);
+  const hero_t *find(const char *name) const;
   
   void clear();
   std::size_t size() const;
   std::size_t capacity() const;
-  const hero_t* getAllHeroes() const;
+  const hero_t *getAllHeroes() const;
 
 private:
-  hero_t* table_;
+  hero_t *table_;
   std::size_t capacity_;
   std::size_t count_;
 
-  static std::size_t hashFunction(const char* str, std::size_t cap);
+  static std::size_t hashFunction(const char *str, std::size_t cap);
   void resize();
 };
 

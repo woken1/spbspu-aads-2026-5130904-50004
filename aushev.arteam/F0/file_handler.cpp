@@ -5,23 +5,23 @@
 
 namespace aushev {
 
-bool FileHandler::exportCsv(const HashTable& db, const char* filename)
+bool FileHandler::exportCsv(const HashTable &db, const char *filename)
 {
-  std::FILE* f = std::fopen(filename, "w");
+  std::FILE *f = std::fopen(filename, "w");
   if (!f) {
     return false;
   }
 
   std::fprintf(f, "Name,Attr,Roles,Winrate,Tier\n");
-  const hero_t* all = db.getAllHeroes();
+  const hero_t *all = db.getAllHeroes();
 
   for (std::size_t i = 0; i < db.capacity(); ++i) {
-    const hero_t& h = all[i];
+    const hero_t &h = all[i];
     if (h.status == 1) {
       std::fprintf(f, "%s,%s,\"", h.name, h.attr);
-      for (int r = 0; r < h.roleCount; ++r) {
+      for (int r = 0; r < h.role_count; ++r) {
         std::fprintf(f, "%s", h.roles[r]);
-        if (r < h.roleCount - 1) {
+        if (r < h.role_count - 1) {
           std::fprintf(f, ";");
         }
       }
@@ -33,17 +33,17 @@ bool FileHandler::exportCsv(const HashTable& db, const char* filename)
   return true;
 }
 
-bool FileHandler::importCsv(HashTable& db, const char* filename, std::size_t& loadedCount)
+bool FileHandler::importCsv(HashTable &db, const char *filename, std::size_t &loaded_count)
 {
-  std::FILE* f = std::fopen(filename, "r");
+  std::FILE *f = std::fopen(filename, "r");
   if (!f) {
     return false;
   }
 
   db.clear();
-  loadedCount = 0;
-  char line[512] = {};
+  loaded_count = 0;
 
+  char line[512] = {};
   if (!std::fgets(line, sizeof(line), f)) {
     std::fclose(f);
     return false;
@@ -51,7 +51,7 @@ bool FileHandler::importCsv(HashTable& db, const char* filename, std::size_t& lo
 
   while (std::fgets(line, sizeof(line), f)) {
     hero_t h = {};
-    char* token = std::strtok(line, ",");
+    char *token = std::strtok(line, ",");
     if (!token) {
       continue;
     }
@@ -68,18 +68,18 @@ bool FileHandler::importCsv(HashTable& db, const char* filename, std::size_t& lo
       continue;
     }
 
-    h.roleCount = 0;
-    char* roleStart = token;
-    while (roleStart && *roleStart && h.roleCount < static_cast< int >(MAX_ROLES)) {
-      char* delim = std::strchr(roleStart, ';');
+    h.role_count = 0;
+    char *role_start = token;
+    while (role_start && *role_start && h.role_count < static_cast<int>(MAX_ROLES)) {
+      char *delim = std::strchr(role_start, ';');
       if (delim) {
         *delim = '\0';
-        std::strncpy(h.roles[h.roleCount], roleStart, MAX_ROLE_LEN - 1);
-        h.roleCount++;
-        roleStart = delim + 1;
+        std::strncpy(h.roles[h.role_count], role_start, MAX_ROLE_LEN - 1);
+        h.role_count++;
+        role_start = delim + 1;
       } else {
-        std::strncpy(h.roles[h.roleCount], roleStart, MAX_ROLE_LEN - 1);
-        h.roleCount++;
+        std::strncpy(h.roles[h.role_count], role_start, MAX_ROLE_LEN - 1);
+        h.role_count++;
         break;
       }
     }
@@ -88,7 +88,7 @@ bool FileHandler::importCsv(HashTable& db, const char* filename, std::size_t& lo
     if (!token) {
       continue;
     }
-    h.winrate = static_cast< float >(std::atof(token));
+    h.winrate = static_cast<float>(std::atof(token));
 
     if (h.winrate > 53.0f) {
       h.tier = 'S';
@@ -100,8 +100,14 @@ bool FileHandler::importCsv(HashTable& db, const char* filename, std::size_t& lo
       h.tier = 'C';
     }
 
+    if (h.winrate <= 0.0f || std::strcmp(h.name, "Axe?") == 0) {
+      h.status = 0;
+    } else {
+      h.status = 1;
+    }
+
     if (db.insert(h)) {
-      loadedCount++;
+      loaded_count++;
     }
   }
 

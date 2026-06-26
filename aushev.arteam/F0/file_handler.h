@@ -7,8 +7,8 @@ namespace aushev {
 
 class FileHandler {
 public:
-  static bool exportCsv(const HashTable& db, const char* filename);
-  static bool importCsv(HashTable& db, const char* filename, std::size_t& loadedCount);
+  static bool exportCsv(const HashTable &db, const char *filename);
+  static bool importCsv(HashTable &db, const char *filename, std::size_t &loaded_count);
 };
 
 }

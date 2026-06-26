@@ -8,21 +8,21 @@ static const int STATUS_EMPTY = 0;
 static const int STATUS_OCCUPIED = 1;
 static const int STATUS_DELETED = 2;
 
-std::size_t HashTable::hashFunction(const char* str, std::size_t cap)
+std::size_t HashTable::hashFunction(const char *str, std::size_t cap)
 {
   if (!str || *str == '\0') {
     return 0;
   }
   std::size_t hash = 5381;
   int c = 0;
-  while ((c = static_cast< int >(*str++))) {
-    hash = ((hash << 5) + hash) + static_cast< std::size_t >(c);
+  while ((c = static_cast<int>(*str++))) {
+    hash = ((hash << 5) + hash) + static_cast<std::size_t>(c);
   }
   return hash % cap;
 }
 
 HashTable::HashTable(std::size_t initialSize) :
-  table_(static_cast< hero_t* >(std::malloc(initialSize * sizeof(hero_t)))),
+  table_(static_cast<hero_t *>(std::malloc(initialSize * sizeof(hero_t)))),
   capacity_(initialSize),
   count_(0)
 {
@@ -41,14 +41,14 @@ HashTable::~HashTable()
 
 void HashTable::resize()
 {
-  std::size_t oldCap = capacity_;
-  hero_t* oldTable = table_;
+  std::size_t old_cap = capacity_;
+  hero_t *old_table = table_;
 
   capacity_ *= 2;
-  table_ = static_cast< hero_t* >(std::malloc(capacity_ * sizeof(hero_t)));
+  table_ = static_cast<hero_t *>(std::malloc(capacity_ * sizeof(hero_t)));
   if (!table_) {
-    capacity_ = oldCap;
-    table_ = oldTable;
+    capacity_ = old_cap;
+    table_ = old_table;
     return;
   }
 
@@ -58,15 +58,15 @@ void HashTable::resize()
   }
 
   count_ = 0;
-  for (std::size_t i = 0; i < oldCap; ++i) {
-    if (oldTable[i].status == STATUS_OCCUPIED) {
-      insert(oldTable[i]);
+  for (std::size_t i = 0; i < old_cap; ++i) {
+    if (old_table[i].status == STATUS_OCCUPIED) {
+      insert(old_table[i]);
     }
   }
-  std::free(oldTable);
+  std::free(old_table);
 }
 
-bool HashTable::insert(const hero_t& hero)
+bool HashTable::insert(const hero_t &hero)
 {
   if (count_ >= capacity_ * 0.75) {
     resize();
@@ -100,7 +100,7 @@ bool HashTable::insert(const hero_t& hero)
   }
 }
 
-bool HashTable::remove(const char* name)
+bool HashTable::remove(const char *name)
 {
   if (!name || *name == '\0') {
     return false;
@@ -126,7 +126,7 @@ bool HashTable::remove(const char* name)
   return false;
 }
 
-const hero_t* HashTable::find(const char* name) const
+const hero_t *HashTable::find(const char *name) const
 {
   if (!name || *name == '\0') {
     return nullptr;
@@ -168,7 +168,7 @@ std::size_t HashTable::capacity() const
   return capacity_;
 }
 
-const hero_t* HashTable::getAllHeroes() const
+const hero_t *HashTable::getAllHeroes() const
 {
   return table_;
 }
