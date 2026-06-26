@@ -83,6 +83,24 @@ int main()
       } else {
         std::cout << "No counter found." << std::endl;
       }
+    } else if (command == "calc") {
+      const char* myTeam[5] = {};
+      const char* enemyTeam[5] = {};
+      std::string myNames[5] = {};
+      std::string enNames[5] = {};
+      for (int i = 0; i < 5; ++i) {
+        std::cin >> myNames[i];
+        myTeam[i] = myNames[i].c_str();
+      }
+      for (int i = 0; i < 5; ++i) {
+        std::cin >> enNames[i];
+        enemyTeam[i] = enNames[i].c_str();
+      }
+      char resLines[2][100] = {};
+      float wr = analyzer.calcWinrate(myTeam, enemyTeam, resLines);
+      std::cout << "Winrate: " << wr << "%" << std::endl;
+      std::cout << "Advantage 1: " << resLines[0] << std::endl;
+      std::cout << "Advantage 2: " << resLines[1] << std::endl;
     } else {
       std::cout << "Unknown command" << std::endl;
     }
