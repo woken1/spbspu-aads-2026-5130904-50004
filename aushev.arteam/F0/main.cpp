@@ -55,6 +55,18 @@ int main()
       }
       analyzer.setBans(lobby, banList, count);
       std::cout << "Bans updated." << std::endl;
+    } else if (command == "lanes") {
+      const char* enemyList[5] = {};
+      std::string enemyNames[5] = {};
+      for (int i = 0; i < 5; ++i) {
+        std::cin >> enemyNames[i];
+        enemyList[i] = enemyNames[i].c_str();
+      }
+      char resLanes[5][100] = {};
+      analyzer.detectLanes(enemyList, 5, resLanes);
+      for (int i = 0; i < 5; ++i) {
+        std::cout << resLanes[i] << std::endl;
+      }
     } else {
       std::cout << "Unknown command" << std::endl;
     }
