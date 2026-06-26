@@ -32,6 +32,29 @@ int main()
       } else {
         std::cout << "Error saving file." << std::endl;
       }
+    } else if (command == "lobby") {
+      int id = 0;
+      std::cin >> id;
+      lobby.id = id;
+      lobby.banCount = 0;
+      lobby.isCreated = true;
+      analyzer.clearDraft(lobby);
+      std::cout << "Lobby " << id << " ready." << std::endl;
+    } else if (command == "ban") {
+      if (!lobby.isCreated) {
+        std::cout << "Create lobby first." << std::endl;
+        continue;
+      }
+      std::size_t count = 0;
+      std::cin >> count;
+      const char* banList[aushev::MAX_BANS] = {};
+      std::string names[aushev::MAX_BANS] = {};
+      for (std::size_t i = 0; i < count && i < aushev::MAX_BANS; ++i) {
+        std::cin >> names[i];
+        banList[i] = names[i].c_str();
+      }
+      analyzer.setBans(lobby, banList, count);
+      std::cout << "Bans updated." << std::endl;
     } else {
       std::cout << "Unknown command" << std::endl;
     }
