@@ -88,4 +88,42 @@ void DraftAnalyzer::detectLanes(const char* enemies[], std::size_t count, char o
   }
 }
 
+const hero_t* DraftAnalyzer::counterLane(const lobby_t& lobby, const char* myRole,
+                                         const char* enemyName, int& outScore) const
+{
+  const hero_t* enemy = db_.find(enemyName);
+  if (!enemy) {
+    return nullptr;
+  }
+
+  const hero_t* bestHero = nullptr;
+  int maxScore = -999;
+  const hero_t* all = db_.getAllHeroes();
+
+  for (std::size_t i = 0; i < db_.capacity(); ++i) {
+    if (all[i].status != 1 || isBanned(lobby, all[i].name)) {
+      continue;
+    }
+    bool hasRole = false;
+    for (int r = 0; r < all[i].roleCount; ++r) {
+      if (std::strcmp(all[i].roles[r], myRole) == 0) {
+        hasRole = true;
+        break;
+      }
+    }
+    if (!hasRole) {
+      continue;
+    }
+
+    int score = getMatchupValue(all[i], *enemy);
+    if (score > maxScore) {
+      maxScore = score;
+      bestHero = &all[i];
+    }
+  }
+
+  outScore = maxScore;
+  return bestHero;
+}
+
 }
