@@ -38,6 +38,11 @@ public:
   bool insert(const hero_t& hero);
   bool remove(const char* name);
   const hero_t* find(const char* name) const;
+  
+  void clear();
+  std::size_t size() const;
+  std::size_t capacity() const;
+  const hero_t* getAllHeroes() const;
 
 private:
   hero_t* table_;

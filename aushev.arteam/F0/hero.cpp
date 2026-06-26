@@ -54,7 +54,7 @@ void HashTable::resize()
     table_[i].status = STATUS_EMPTY;
   }
 
-  count = 0;
+  count_ = 0;
   for (std::size_t i = 0; i < oldCap; ++i) {
     if (oldTable[i].status == STATUS_OCCUPIED) {
       oldTable[i].distance = 0;
@@ -140,6 +140,29 @@ const hero_t* HashTable::find(const char* name) const
     }
   }
   return nullptr;
+}
+
+void HashTable::clear()
+{
+  for (std::size_t i = 0; i < capacity_; ++i) {
+    table_[i].status = STATUS_EMPTY;
+  }
+  count_ = 0;
+}
+
+std::size_t HashTable::size() const
+{
+  return count_;
+}
+
+std::size_t HashTable::capacity() const
+{
+  return capacity_;
+}
+
+const hero_t* HashTable::getAllHeroes() const
+{
+  return table_;
 }
 
 }
