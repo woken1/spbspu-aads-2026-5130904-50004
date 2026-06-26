@@ -57,7 +57,6 @@ void HashTable::resize()
   count_ = 0;
   for (std::size_t i = 0; i < oldCap; ++i) {
     if (oldTable[i].status == STATUS_OCCUPIED) {
-      oldTable[i].distance = 0;
       insert(oldTable[i]);
     }
   }
