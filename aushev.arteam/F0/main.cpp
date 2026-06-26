@@ -67,6 +67,22 @@ int main()
       for (int i = 0; i < 5; ++i) {
         std::cout << resLanes[i] << std::endl;
       }
+    } else if (command == "counter") {
+      if (!lobby.isCreated) {
+        std::cout << "Create lobby first." << std::endl;
+        continue;
+      }
+      std::string role;
+      std::string enemyName;
+      std::cin >> role >> enemyName;
+      int score = 0;
+      const aushev::hero_t* best = analyzer.counterLane(lobby, role.c_str(),
+                                                        enemyName.c_str(), score);
+      if (best) {
+        std::cout << "Counter: " << best->name << " (Score: " << score << ")" << std::endl;
+      } else {
+        std::cout << "No counter found." << std::endl;
+      }
     } else {
       std::cout << "Unknown command" << std::endl;
     }
