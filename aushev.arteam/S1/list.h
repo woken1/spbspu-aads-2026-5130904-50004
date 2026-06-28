@@ -265,28 +265,25 @@ List< T >& List< T >::operator=(const List& other)
       push_back(item);
     }
   }
-  return *this;
-}
 
-template< class T >
-List< T >::List(List&& other) noexcept
-  : head_(other.head_)
-  , tail_(other.tail_)
-  , size_(other.size_)
-{
-  other.head_ = nullptr;
-  other.tail_ = nullptr;
-  other.size_ = 0;
-}
+  template< class T >
+  List< T >& List< T >::operator=(const List& other)
+  {
+    if (this != &other) {
+      clear();
+      for (const auto& item : other) {
+        push_back(item);
+      }
+    }
+    return *this;
+  }
 
-template< class T >
-List< T >& List< T >::operator=(List&& other) noexcept
-{
-  if (this != &other) {
-    clear();
-    head_ = other.head_;
-    tail_ = other.tail_;
-    size_ = other.size_;
+  template< class T >
+  List< T >::List(List&& other) noexcept
+    : head_(other.head_)
+    , tail_(other.tail_)
+    , size_(other.size_)
+  {
     other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
